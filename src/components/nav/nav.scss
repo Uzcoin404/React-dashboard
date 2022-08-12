@@ -1,0 +1,17 @@
+.nav{
+    &__link{
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 150%;
+        color: #6B7280;
+        margin-right: 16px;
+        transition: all .3s;
+        &[aria-current="page"], &:hover{
+            color: #0E9F6E;
+        }
+    }
+    &__search{
+        width: 400px;
+        height: 45px;
+    }
+}
