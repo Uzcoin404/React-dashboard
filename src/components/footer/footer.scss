@@ -1,0 +1,17 @@
+.footer{
+    display: flex;
+    justify-content: space-between;
+    padding: 48px 32px;
+    background-color: #fff;
+    border-radius: 16px;
+    &__text{
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 150%;
+        color: #6B7280;
+    }
+    &__social{
+        column-gap: 24px;
+        display: flex;
+    }
+}

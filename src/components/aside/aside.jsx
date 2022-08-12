@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
-import { Inbox } from "../../lib/icons/Icons";
+import { ChartPie, DocumentReport, ShoppingBag, Inbox, LockClosed, ClipboardList, Collection, Support } from "../../lib/icons/Icons";
 import "./aside.scss";
 
 function Aside({ mobileOpen, pages, MenuToggle }) {
@@ -22,17 +22,17 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
 
     const MenuList = [
         {
-            icon: <Inbox />,
+            icon: <ChartPie />,
             title: "Overview",
             to: "/",
         },
         {
-            icon: "",
+            icon: <DocumentReport />,
             title: "Pages",
             items: pages
         },
         {
-            icon: "",
+            icon: <ShoppingBag />,
             title: "Sales",
             items: [
                 {
@@ -59,27 +59,27 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
             ],
         },
         {
-            icon: "",
+            icon: <Inbox />,
             title: "Messages",
             to: "/inbox",
         },
         {
-            icon: "",
+            icon: <LockClosed />,
             title: "Authentication",
             to: "/auth",
         },
         {
-            icon: "",
+            icon: <ClipboardList />,
             title: "Docs",
             to: "/docs",
         },
         {
-            icon: "",
+            icon: <Collection />,
             title: "Components",
             to: "/components",
         },
         {
-            icon: "",
+            icon: <Support />,
             title: "Help",
             to: "/help",
         },
@@ -132,7 +132,7 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                 <ListItem
                     button
                     onClick={handleClick}
-                    className="aside__list__item"
+                    className="aside__list__item expandable__list"
                 >
                     <ListItemBody config={config} />
                     {open ? <ExpandLess /> : <ExpandMore />}
@@ -166,45 +166,33 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
     };
 
     return (
-        <div className="aside">
-            <Box
-                component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-            >
-                <Drawer
-                    variant="persistant"
-                    open={mobileOpen}
-                    onClose={MenuToggle}
-                    ModalProps={{
-                        keepMounted: true,
-                    }}
-                    sx={{
-                        display: { xs: "block", md: "none" },
-                        flexShrink: 0,
-                        "& .MuiDrawer-paper": {
-                            boxSizing: "border-box",
-                            width: drawerWidth,
-                        },
-                    }}
-                >
-                    {drawer}
-                </Drawer>
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: "none", md: "block" },
-                        "& .MuiDrawer-paper": {
-                            boxSizing: "border-box",
-                            width: drawerWidth,
-                            zIndex: "-1",
-                        },
-                    }}
-                    open
-                >
-                    {drawer}
-                </Drawer>
+        <Box
+            component="nav"
+            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+            className="aside"
+        >
+            <Box className="aside__content" sx={{ width: drawerWidth }}>
+                {drawer}
             </Box>
-        </div>
+            <Drawer
+                variant="temporary"
+                open={mobileOpen}
+                onClose={MenuToggle}
+                ModalProps={{
+                    keepMounted: true,
+                }}
+                sx={{
+                    display: { xs: "block", md: "none" },
+                    flexShrink: 0,
+                    "& .MuiDrawer-paper": {
+                        boxSizing: "border-box",
+                        width: drawerWidth,
+                    },
+                }}
+            >
+                {drawer}
+            </Drawer>
+        </Box>
     );
 }
 export default Aside;

@@ -4,6 +4,10 @@
     box-sizing: border-box;
     outline: none;
 }
+body{
+    min-height: 100vh;
+    scroll-behavior: smooth;
+}
 a{
     text-decoration: none;
 }
