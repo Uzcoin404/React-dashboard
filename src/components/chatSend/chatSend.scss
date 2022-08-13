@@ -1,0 +1,110 @@
+.chat{
+    .inputMessage{
+        display: flex;
+        align-items: center;
+        padding-right: 15px;
+        z-index: 99;
+        .attachFile{
+            position: relative;
+            width: 34px;
+            height: 37px;
+            * {
+                cursor: pointer;
+            }
+            transition: .3s;
+            &:hover{
+                background-color: #5EBBF033;
+            }
+            &__input{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                z-index: 9;
+            }
+        }
+        .chatInput{
+            height: 50px;
+            width: 100%;
+            position: relative;
+            margin-left: 20px;
+            .message__input{
+                width: 100%;
+                height: 100%;
+                border-radius: 12px;
+                border: 2px solid #E2E8F0;
+                padding: 10px 20px;
+                padding-right: 50px;
+                background-color: #fff;
+                caret-color: #357aff;
+                color: #333;
+                font-size: 16px;
+            }
+            .sendBtn{
+                position: absolute;
+                top: 50%;
+                right: 8px;
+                background-color: #5EBBF033;
+                transform: translateY(-50%) scale(0);
+                transition: all .3s;
+                cursor: pointer;
+                pointer-events: all;
+                &.active{
+                    transform: translateY(-50%) scale(1);
+                }
+                &:disabled{
+                    cursor: alias;
+                    pointer-events: none;
+                }
+                & img{
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            @media (max-width: 400px) {
+                margin-left: 10px;
+                height: 44px;
+                .message__input{
+                    padding: 10px 15px;
+                    padding-right: 45px;
+                    font-size: 15px;
+                    &::placeholder{
+                        font-size: 15px;
+                    }
+                }
+                .sendBtn{
+                    width: 33px;
+                    height: 33px;
+                }
+            }
+        }
+    }
+    .imagePreview{
+        &__content{
+            max-height: 600px;
+            padding: 20px;
+        }
+        &__group{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+        &__image{
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            max-height: 220px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        &__buttons{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        &__btn{
+            border-radius: 10px;
+        }
+    }
+}

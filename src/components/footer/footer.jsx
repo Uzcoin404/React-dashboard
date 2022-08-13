@@ -10,10 +10,10 @@ function Footer() {
         <footer className="footer">
             <p className="footer__text">© 2021 Themesberg, LLC. All rights reserved.</p>
             <div className="footer__social">
-                <img src={facebook} alt="" />
-                <img src={twitter} alt="" />
-                <img src={github} alt="" />
-                <img src={dribble} alt="" />
+                <a href="#"><img src={facebook} alt="" /></a>
+                <a href="#"><img src={twitter} alt="" /></a>
+                <a href="#"><img src={github} alt="" /></a>
+                <a href="#"><img src={dribble} alt="" /></a>
             </div>
         </footer>
     );

@@ -85,10 +85,9 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
         },
     ];
 
-    const drawer = (
+    const drawer = (toolbar = false) => (
         <div>
-            <Toolbar />
-            <Divider />
+            {toolbar ? <><Toolbar /><Divider /></> : ''}
             <Menu items={MenuList} />
             <Divider />
         </div>
@@ -168,11 +167,11 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
     return (
         <Box
             component="nav"
-            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+            sx={{ flexShrink: { sm: 0 } }}
             className="aside"
         >
-            <Box className="aside__content" sx={{ width: drawerWidth }}>
-                {drawer}
+            <Box className="aside__content" sx={{ width: drawerWidth, display: { xs: "none", md: "block" }, }}>
+                {drawer()}
             </Box>
             <Drawer
                 variant="temporary"
@@ -190,7 +189,7 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                     },
                 }}
             >
-                {drawer}
+                {drawer(true)}
             </Drawer>
         </Box>
     );

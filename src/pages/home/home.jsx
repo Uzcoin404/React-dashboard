@@ -15,14 +15,14 @@ function Home() {
     const pages = [
         { to: "/", title: "Dashboard" },
         { to: "/team", title: "Team" },
-        { to: "/projects", title: "Projects" },
+        { to: "/projects", title: "Projects" }, 
         { to: "/calendar", title: "Calendar" },
     ];
 
     return (
         <>
             <Nav MenuToggle={MenuToggle} pages={pages} />
-            <Box sx={{ display: "flex" }}>
+            <Box sx={{ display: "flex", minHeight: '93vh' }} component="main">
                 <Aside
                     mobileOpen={mobileOpen}
                     MenuToggle={MenuToggle}
