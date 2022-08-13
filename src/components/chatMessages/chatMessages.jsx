@@ -26,7 +26,6 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
     const messagesBlog = document.querySelector(
         ".styles_scrollable-div__prSCv"
     );
-    const bubbles = document.querySelector(".bubbles");
     const scrollBottomBtn = document.querySelector(".scrollBottom");
 
     messagesBlog?.addEventListener("scroll", function () {

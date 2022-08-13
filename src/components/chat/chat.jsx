@@ -1,129 +1,267 @@
-import React, { useRef, useState } from 'react';
+// Import => React
+import React, {
+    useContext,
+    useEffect,
+    useState,
+    createRef,
+    useRef,
+} from "react";
+import { NavLink as Link } from "react-router-dom";
 
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import "firebase/compat/auth";
 
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/auth';
-import 'firebase/compat/analytics';
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
+// Import => Mui
+import { Box, Button, IconButton } from "@mui/material";
 
-firebase.initializeApp({ 
-    apiKey: "AIzaSyD16qWNFnlRg4r3LN9eZSO-EcVQm86TrMo", 
-    authDomain: "firechat-e157a.firebaseapp.com", 
-    projectId: "firechat-e157a", 
-    storageBucket: "firechat-e157a.appspot.com", 
-    messagingSenderId: "1028131822299", 
-    appId: "1:1028131822299:web:47fe8cfd0029d828068afe", 
-    measurementId: "G-9E22DH34DF" 
-  })
+// Import => Components
+import ChatUsers from "../chatUsers/chatUsers";
+import ChatMessages from "../chatMessages/chatMessages";
+import ChatSend from "../chatSend/chatSend";
+import useWindowDimensions from "../../utils/windowDimension";
+import ArrowLeft from "../../lib/icons/arrowLeft";
+import ArrowDown from "../../lib/icons/arrowDown";
+import Dots from "../../assets/img/icon/dots.svg";
 
-const auth = firebase.auth();
-const firestore = firebase.firestore();
-const analytics = firebase.analytics();
+// Import => Style
+import "./chat.scss";
+import "aos/dist/aos.css";
 
+function Chat() {
+    let userID = localStorage.getItem("user_id");
+    let urlHash = window.location.hash.substring(1);
 
-function App() {
+    const [messages, setMessagesData] = useState("loading");
+    const [adverts, setAdverts] = useState([]);
+    const [chats, setChats] = useState(null);
+    const [chatID, setChatID] = useState(
+        urlHash.trim() != "" && !isNaN(urlHash) && urlHash != userID
+            ? urlHash
+            : null
+    );
+    const [chatUser, setChatUser] = useState();
+    const [isLoading, setIsLoading] = useState(true);
+    const [chatFound, setChatFound] = useState(true);
+    const defaultAvatar =
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI7M4Z0v1HP2Z9tZmfQaZFCuspezuoxter_A&usqp=CAU";
+    const { windowWidth } = useWindowDimensions();
+    const chatMenu = createRef();
 
-  const [user] = useAuthState(auth);
+    useEffect(() => {
+        setMessagesData("loading");
+        if (chatID) {
+            function getUser() {}
+            getUser();
+        }
+        document.querySelector("#messageInput")?.focus();
+    }, [chatID]);
 
-  return (
-    <div className="App">
-      <header>
-        <h1>⚛️🔥💬</h1>
-        <SignOut />
-      </header>
+    useEffect(() => {
+        window.addEventListener("hashchange", getHashUrl);
+        function getHashUrl() {
+            let hash = window.location.hash.substring(1);
+            if (hash.trim() != "" && !isNaN(hash) && hash != userID) {
+                setChatID(hash);
+            } else {
+                setChatID(null);
+                window.addEventListener("hashchange", getHashUrl, {
+                    once: true,
+                });
+                window.location.hash = "";
+            }
+        }
+        setTimeout(() => {
+            Notification.requestPermission().then((result) => {
+                console.log(result);
+            });
+            document.querySelector("#__replain_widget_iframe")?.remove();
+        }, 3000);
+    }, []);
 
-      <section>
-        {user ? <ChatRoom /> : <SignIn />}
-      </section>
+    firebase.initializeApp({
+        apiKey: "AIzaSyD16qWNFnlRg4r3LN9eZSO-EcVQm86TrMo",
+        authDomain: "firechat-e157a.firebaseapp.com",
+        projectId: "firechat-e157a",
+        storageBucket: "firechat-e157a.appspot.com",
+        messagingSenderId: "1028131822299",
+        appId: "1:1028131822299:web:47fe8cfd0029d828068afe",
+        measurementId: "G-9E22DH34DF",
+    });
 
-    </div>
-  );
+    const auth = firebase.auth();
+    const firestore = firebase.firestore();
+
+    function getMessages() {}
+
+    function getChats(isNotification = false) {}
+
+    function showNotification(chat) {
+        let user = chat.user?.name + " " + chat.user?.lastname;
+        let message = chat.latest.message.slice(0, 50);
+        let userAvatar = chat.user.image ? chat.user.image : defaultAvatar;
+
+        new Notification(user, { body: message, icon: userAvatar });
+        return 0;
+    }
+
+    function signIn() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        auth.useDeviceLanguage();
+        auth.signInWithPopup(provider);
+    }
+
+    function SignOut() {
+        return (
+            auth.currentUser && (
+                <Button className="sign__out__btn" onClick={() => auth.signOut()}>
+                    Sign Out
+                </Button>
+            )
+        );
+    }
+
+    function ChatRoom() {
+        const messagesRef = firestore.collection("messages");
+        const query = messagesRef.orderBy("createdAt").limit(25);
+
+        setMessagesData(useCollectionData(query, { idField: "id" }));
+
+        const sendMessage = async (e) => {
+            e.preventDefault();
+
+            const { uid, photoURL } = auth.currentUser;
+
+            await messagesRef.add({
+                text: formValue,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                uid,
+                photoURL,
+            });
+        };
+
+        function ChatMessage(props) {
+            const { text, uid, photoURL } = props.message;
+
+            const messageClass =
+                uid === auth.currentUser.uid ? "sent" : "received";
+
+            return (
+                <>
+                    <div className={`message ${messageClass}`}>
+                        <img src={photoURL || defaultAvatar} />
+                        <p>{text}</p>
+                    </div>
+                </>
+            );
+        }
+    }
+
+    if (auth.currentUser) {
+        return (
+            <Box className="chat">
+                <ChatUsers
+                    chats={chats}
+                    chatID={chatID}
+                    isLoading={isLoading}
+                    defaultAvatar={defaultAvatar}
+                    chatMenu={chatMenu}
+                    isOpen={windowWidth < 768 && !chatID ? true : false}
+                />
+
+                <section className="messagesPanel">
+                    {chatUser && chatFound ? (
+                        <Box className="messagesPanel__header">
+                            {windowWidth > 768 ? (
+                                ""
+                            ) : (
+                                <IconButton
+                                    className="chatMenuBtn"
+                                    variant="text"
+                                    color="primary"
+                                    onClick={() =>
+                                        chatMenu.current.classList.add("active")
+                                    }
+                                >
+                                    <Link to={"/chat#"}>
+                                        <ArrowLeft />
+                                    </Link>
+                                </IconButton>
+                            )}
+                            <Box className="chatProfile">
+                                <Link to={"/reltorcob/" + chatUser.id}>
+                                    <img
+                                        src={
+                                            chatUser.image
+                                                ? chatUser.image
+                                                : defaultAvatar
+                                        }
+                                        alt=""
+                                        className="chatProfile__img"
+                                        onError={(e) =>
+                                            (e.target.src = defaultAvatar)
+                                        }
+                                    />
+                                </Link>
+                                <Box className="chatProfile__content">
+                                    <Link
+                                        to={"/reltorcob/" + chatUser.id}
+                                        className="chatProfile__name"
+                                    >
+                                        {chatUser.name} {chatUser.lastname}
+                                    </Link>
+                                    <span className="chatProfile__text">
+                                        {chatUser?.user_type}
+                                    </span>
+                                </Box>
+                            </Box>
+                            <div className="header__more">
+                                <IconButton className="header__more__btn">
+                                    <img src={Dots} alt="" />
+                                </IconButton>
+                            </div>
+                        </Box>
+                    ) : (
+                        ""
+                    )}
+
+                    <ChatMessages
+                        messages={messages}
+                        chatUser={chatUser}
+                        chatID={chatID}
+                        defaultAvatar={defaultAvatar}
+                    />
+
+                    {chatUser && chatFound ? (
+                        <ChatSend
+                            chatUser={chatUser}
+                            messages={messages}
+                            getMessages={getMessages}
+                            getChats={getChats}
+                        />
+                    ) : (
+                        ""
+                    )}
+                </section>
+
+                <section className="infoPanel">
+                    {/* <SignOut /> */}
+                </section>
+            </Box>
+        );
+    } else {
+        return (
+            <Box
+                sx={{ display: "grid", placeItems: "center", height: "100vh" }}
+            >
+                <Button variant="outlined" size="large" onClick={signIn}>
+                    Sign in with Google
+                </Button>
+            </Box>
+        );
+    }
 }
-
-function SignIn() {
-
-  const signInWithGoogle = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
-  }
-
-  return (
-    <>
-      <button className="sign-in" onClick={signInWithGoogle}>Sign in with Google</button>
-      <p>Do not violate the community guidelines or you will be banned for life!</p>
-    </>
-  )
-
-}
-
-function SignOut() {
-  return auth.currentUser && (
-    <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
-  )
-}
-
-
-function ChatRoom() {
-  const dummy = useRef();
-  const messagesRef = firestore.collection('messages');
-  const query = messagesRef.orderBy('createdAt').limit(25);
-
-  const [messages] = useCollectionData(query, { idField: "IT0NjFln3yEPYIGQWgbP" });
-
-  const [formValue, setFormValue] = useState('');
-
-
-  const sendMessage = async (e) => {
-    e.preventDefault();
-
-    const { uid, photoURL } = auth.currentUser;
-
-    await messagesRef.add({
-      text: formValue,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      uid,
-      photoURL
-    })
-
-    setFormValue('');
-    dummy.current.scrollIntoView({ behavior: 'smooth' });
-  }
-
-  return (<>
-    <main>
-
-      {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)}
-
-      <span ref={dummy}></span>
-
-    </main>
-
-    <form onSubmit={sendMessage}>
-
-      <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="say something nice" />
-
-      <button type="submit" disabled={!formValue}>🕊️</button>
-
-    </form>
-  </>)
-}
-
-
-function ChatMessage(props) {
-  const { text, uid, photoURL } = props.message;
-
-  const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
-
-  return (<>
-    <div className={`message ${messageClass}`}>
-      <img src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} />
-      <p>{text}</p>
-    </div>
-  </>)
-}
-
-
-export default App;
+export default Chat;
