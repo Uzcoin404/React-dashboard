@@ -124,42 +124,6 @@ function Chat() {
         );
     }
 
-    function ChatRoom() {
-        const messagesRef = firestore.collection("messages");
-        const query = messagesRef.orderBy("createdAt").limit(25);
-
-        setMessagesData(useCollectionData(query, { idField: "id" }));
-
-        const sendMessage = async (e) => {
-            e.preventDefault();
-
-            const { uid, photoURL } = auth.currentUser;
-
-            await messagesRef.add({
-                text: formValue,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                uid,
-                photoURL,
-            });
-        };
-
-        function ChatMessage(props) {
-            const { text, uid, photoURL } = props.message;
-
-            const messageClass =
-                uid === auth.currentUser.uid ? "sent" : "received";
-
-            return (
-                <>
-                    <div className={`message ${messageClass}`}>
-                        <img src={photoURL || defaultAvatar} />
-                        <p>{text}</p>
-                    </div>
-                </>
-            );
-        }
-    }
-
     if (auth.currentUser) {
         return (
             <Box className="chat">
