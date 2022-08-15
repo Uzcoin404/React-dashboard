@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/home/home";
@@ -13,6 +13,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/inbox/*" element={<Chat />} />
+                <Route path="/home/*" element={<Home />} />
                 <Route path="*" element={<Page404 />} />
             </Routes>
         </BrowserRouter>

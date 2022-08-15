@@ -14,7 +14,16 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
-import { ChartPie, DocumentReport, ShoppingBag, Inbox, LockClosed, ClipboardList, Collection, Support } from "../../lib/icons/Icons";
+import {
+    ChartPie,
+    DocumentReport,
+    ShoppingBag,
+    Inbox,
+    LockClosed,
+    ClipboardList,
+    Collection,
+    Support,
+} from "../../lib/icons/Icons";
 import "./aside.scss";
 
 function Aside({ mobileOpen, pages, MenuToggle }) {
@@ -29,7 +38,7 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
         {
             icon: <DocumentReport />,
             title: "Pages",
-            items: pages
+            items: pages,
         },
         {
             icon: <ShoppingBag />,
@@ -49,13 +58,13 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                     ],
                 },
                 {
-                    title: 'Billing',
-                    to: '/billing'
+                    title: "Billing",
+                    to: "/billing",
                 },
                 {
-                    title: 'Invoice',
-                    to: '/invoice'
-                }
+                    title: "Invoice",
+                    to: "/invoice",
+                },
             ],
         },
         {
@@ -71,7 +80,7 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
         {
             icon: <ClipboardList />,
             title: "Docs",
-            to: "/docs",
+            to: "/home/tables",
         },
         {
             icon: <Collection />,
@@ -85,12 +94,12 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
         },
     ];
 
-    const drawer = (toolbar = false) => (
-        <div>
-            {toolbar ? <><Toolbar /><Divider /></> : ''}
+    const drawer = (
+        <>
+            <Toolbar />
             <Menu items={MenuList} />
             <Divider />
-        </div>
+        </>
     );
 
     function Menu({ items }) {
@@ -146,10 +155,16 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
     const ListItemBody = ({ config }) => {
         return (
             <>
-                <ListItemIcon sx={{ minWidth: "40px" }} className="aside__list__icon">
+                <ListItemIcon
+                    sx={{ minWidth: "40px" }}
+                    className="aside__list__icon"
+                >
                     {config.icon}
                 </ListItemIcon>
-                <ListItemText primary={config.title}  className="aside__list__text"/>
+                <ListItemText
+                    primary={config.title}
+                    className="aside__list__text"
+                />
             </>
         );
     };
@@ -165,14 +180,24 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
     };
 
     return (
-        <Box
-            component="nav"
-            sx={{ flexShrink: { sm: 0 } }}
-            className="aside"
-        >
-            <Box className="aside__content" sx={{ width: drawerWidth, display: { xs: "none", md: "block" }, }}>
-                {drawer()}
-            </Box>
+        <Box component="nav" sx={{ flexShrink: { sm: 0 } }} className="aside">
+            <Drawer
+                variant="permanent"
+                sx={{
+                    width: drawerWidth,
+                    display: { xs: "none", md: "block" },
+                    "& .MuiDrawer-paper": {
+                        boxSizing: "border-box",
+                        width: drawerWidth,
+                        zIndex: (theme) => theme.zIndex.drawer - 101
+                    },
+                }}
+                open
+            >
+                <Box className="aside__content">
+                    {drawer}
+                </Box>
+            </Drawer>
             <Drawer
                 variant="temporary"
                 open={mobileOpen}
@@ -189,7 +214,7 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                     },
                 }}
             >
-                {drawer(true)}
+                {drawer}
             </Drawer>
         </Box>
     );

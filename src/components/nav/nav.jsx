@@ -38,7 +38,7 @@ function Nav({ MenuToggle, pages, isHaveSearch = true }) {
 
     return (
         <AppBar
-            position="static"
+            position="fixed"
             className="nav"
             sx={{
                 backgroundColor: "#fff",

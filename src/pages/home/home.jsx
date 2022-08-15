@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Box } from "@mui/material";
+import { Box, CssBaseline } from "@mui/material";
 
 import Nav from "../../components/nav/nav";
 import Aside from "../../components/aside/aside";
@@ -20,17 +20,16 @@ function Home() {
     ];
 
     return (
-        <>
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
             <Nav MenuToggle={MenuToggle} pages={pages} />
-            <Box sx={{ display: "flex", minHeight: '93vh' }} component="main">
-                <Aside
-                    mobileOpen={mobileOpen}
-                    MenuToggle={MenuToggle}
-                    pages={pages}
-                />
-                <Main />
-            </Box>
-        </>
+            <Aside
+                mobileOpen={mobileOpen}
+                MenuToggle={MenuToggle}
+                pages={pages}
+            />
+            <Main />
+        </Box>
     );
 }
 export default Home;
