@@ -96,6 +96,7 @@ function Nav({ MenuToggle, pages, isHaveSearch = true }) {
                             }}
                             sx={{
                                 height: "45px",
+                                width: {lg: '400px', md: '360px', sm: '300px', xs: '100%'},
                                 "& fieldset": {
                                     borderRadius: "16px",
                                     borderColor: "#E5E7EB",

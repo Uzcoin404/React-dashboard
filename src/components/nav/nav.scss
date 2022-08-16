@@ -11,7 +11,8 @@
         }
     }
     &__search{
-        width: 400px;
-        height: 45px;
+        @media (max-width: 500px) {
+            display: none !important;
+        }
     }
 }

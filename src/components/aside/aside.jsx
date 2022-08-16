@@ -25,6 +25,7 @@ import {
     Support,
 } from "../../lib/icons/Icons";
 import "./aside.scss";
+import logo from "../../assets/img/logo.png";
 
 function Aside({ mobileOpen, pages, MenuToggle }) {
     const drawerWidth = "250px";
@@ -94,9 +95,9 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
         },
     ];
 
-    const drawer = (
+    const drawer = (toolbar) => (
         <>
-            <Toolbar />
+            <Toolbar>{!toolbar ? "" : <img src={logo} alt="" />}</Toolbar>
             <Menu items={MenuList} />
             <Divider />
         </>
@@ -189,14 +190,12 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                     "& .MuiDrawer-paper": {
                         boxSizing: "border-box",
                         width: drawerWidth,
-                        zIndex: (theme) => theme.zIndex.drawer - 101
+                        zIndex: (theme) => theme.zIndex.drawer - 101,
                     },
                 }}
                 open
             >
-                <Box className="aside__content">
-                    {drawer}
-                </Box>
+                <Box className="aside__content">{drawer()}</Box>
             </Drawer>
             <Drawer
                 variant="temporary"
@@ -214,7 +213,7 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                     },
                 }}
             >
-                {drawer}
+                {drawer(true)}
             </Drawer>
         </Box>
     );
