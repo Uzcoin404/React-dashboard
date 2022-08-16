@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import menuToggle from "../menuToggle";
 
 import {
     Drawer,
@@ -27,8 +29,10 @@ import {
 import "./aside.scss";
 import logo from "../../assets/img/logo.png";
 
-function Aside({ mobileOpen, pages, MenuToggle }) {
+function Aside({ pages }) {
     const drawerWidth = "250px";
+    const open = useSelector((state) => state.menuToggle.open);
+    const dispatch = useDispatch();
 
     const MenuList = [
         {
@@ -60,11 +64,11 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                 },
                 {
                     title: "Billing",
-                    to: "/billing",
+                    to: "/dashboard/billing",
                 },
                 {
                     title: "Invoice",
-                    to: "/invoice",
+                    to: "/dashboard/invoice",
                 },
             ],
         },
@@ -77,36 +81,38 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
             icon: <LockClosed />,
             title: "Authentication",
             to: "/auth",
+            divider: true,
         },
         {
             icon: <ClipboardList />,
             title: "Docs",
-            to: "/home/tables",
+            to: "/dashboard/docs",
         },
         {
             icon: <Collection />,
             title: "Components",
-            to: "/components",
+            to: "/dashboard/components",
         },
         {
             icon: <Support />,
             title: "Help",
-            to: "/help",
+            to: "/dashboard/help",
         },
     ];
 
     const drawer = (toolbar) => (
         <>
-            <Toolbar>{!toolbar ? "" : <img src={logo} alt="" />}</Toolbar>
+            <Toolbar>
+                {!toolbar ? "" : <img src={logo} alt="" />}
+            </Toolbar>
             <Menu items={MenuList} />
-            <Divider />
         </>
     );
 
     function Menu({ items }) {
         const createList = (items) => {
             let menu = [];
-            items.map((menuItem) => {
+            items.map((menuItem, i) => {
                 if (
                     Array.isArray(menuItem.items) &&
                     menuItem.items.length > 0
@@ -114,12 +120,17 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                     menu.push(
                         <ExpandableMenuItem
                             config={menuItem}
-                            key={menuItem.title}
+                            divider={menuItem.hasOwnProperty("divider")}
+                            key={i}
                         />
                     );
                 } else {
                     menu.push(
-                        <MenuItem config={menuItem} key={menuItem.title} />
+                        <MenuItem
+                            config={menuItem}
+                            divider={menuItem.hasOwnProperty("divider")}
+                            key={i}
+                        />
                     );
                 }
             });
@@ -129,9 +140,20 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
         return <List className="aside__list">{createList(items)}</List>;
     }
 
-    const ExpandableMenuItem = ({ config }) => {
-        const [open, setOpen] = useState(false);
+    const ExpandableMenuItem = ({ config, divider }) => {
+        const [open, setOpen] = useState(checkPage());
 
+        function checkPage() {
+            if (config.hasOwnProperty("items")) {
+                let items = config.items;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].to == window.location.pathname) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         const handleClick = () => {
             setOpen(!open);
         };
@@ -146,6 +168,7 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
                     <ListItemBody config={config} />
                     {open ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
+                {!divider ? "" : <Divider />}
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <Menu items={config.items} />
                 </Collapse>
@@ -170,12 +193,17 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
         );
     };
 
-    const MenuItem = ({ config }) => {
+    const MenuItem = ({ config, divider }) => {
         return (
             <Link to={config.to} className="aside__list__link">
-                <ListItem button className="aside__list__item">
+                <ListItem
+                    button
+                    className="aside__list__item"
+                    onClick={() => dispatch(menuToggle())}
+                >
                     <ListItemBody config={config} />
                 </ListItem>
+                {!divider ? "" : <Divider />}
             </Link>
         );
     };
@@ -199,8 +227,8 @@ function Aside({ mobileOpen, pages, MenuToggle }) {
             </Drawer>
             <Drawer
                 variant="temporary"
-                open={mobileOpen}
-                onClose={MenuToggle}
+                open={open}
+                onClose={() => dispatch(menuToggle())}
                 ModalProps={{
                     keepMounted: true,
                 }}

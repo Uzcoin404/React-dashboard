@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
+import { useDispatch } from 'react-redux'
+import { menuToggle } from "../menuToggle";
 
 import {
     AppBar,
@@ -24,7 +26,7 @@ import userAvatar from "../../assets/img/avatar.png";
 
 import "./nav.scss";
 
-function Nav({ MenuToggle, pages, isHaveSearch = true }) {
+function Nav({ pages, isHaveSearch = true }) {
     const [anchorElUser, setAnchorElUser] = useState(null);
 
     const handleOpenUserMenu = (event) => {
@@ -33,6 +35,8 @@ function Nav({ MenuToggle, pages, isHaveSearch = true }) {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+    const dispatch = useDispatch()
+
 
     const settings = ["My profile", "Account", "Dashboard", "Log out"];
 
@@ -69,7 +73,7 @@ function Nav({ MenuToggle, pages, isHaveSearch = true }) {
                             size="large"
                             aria-controls="menu-appbar"
                             aria-haspopup="true"
-                            onClick={MenuToggle}
+                            onClick={() => dispatch(menuToggle())}
                             color="inherit"
                         >
                             <MenuIcon sx={{ color: "#111827" }} />
@@ -96,7 +100,12 @@ function Nav({ MenuToggle, pages, isHaveSearch = true }) {
                             }}
                             sx={{
                                 height: "45px",
-                                width: {lg: '400px', md: '360px', sm: '300px', xs: '100%'},
+                                width: {
+                                    lg: "400px",
+                                    md: "360px",
+                                    sm: "300px",
+                                    xs: "100%",
+                                },
                                 "& fieldset": {
                                     borderRadius: "16px",
                                     borderColor: "#E5E7EB",
