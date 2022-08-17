@@ -14,8 +14,8 @@ function Home() {
         <Box sx={{ display: "flex" }}>
             <CssBaseline />
             <Provider store={menuStore}>
-                <Nav pages={pages} />
-                <Aside pages={pages} />
+                <Nav />
+                <Aside />
             </Provider>
             <Main />
         </Box>

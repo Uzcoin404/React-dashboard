@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
 import { useDispatch } from 'react-redux'
 import { menuToggle } from "../menuToggle";
+import pages from "../../layout/pages";
 
 import {
     AppBar,
@@ -26,7 +27,7 @@ import userAvatar from "../../assets/img/avatar.png";
 
 import "./nav.scss";
 
-function Nav({ pages, isHaveSearch = true }) {
+function Nav({ isHaveSearch = true }) {
     const [anchorElUser, setAnchorElUser] = useState(null);
 
     const handleOpenUserMenu = (event) => {
@@ -126,10 +127,10 @@ function Nav({ pages, isHaveSearch = true }) {
                                 display: { xs: "none", md: "flex" },
                             }}
                         >
-                            {pages.map((page) => (
+                            {pages.map((page, i) => (
                                 <Link
+                                    key={i}
                                     to={page.to}
-                                    key={page.to}
                                     className="nav__link"
                                 >
                                     {page.title}

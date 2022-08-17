@@ -123,10 +123,11 @@ function Overview() {
     const item = {
         borderRadius: "16px",
         backgroundColor: "#fff",
-        p: {lg: 3, xs: 2},
+        p: { lg: 3, xs: 2 },
         width: "100%",
         height: "100%",
-        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1)',
+        boxShadow:
+            "0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1)",
     };
 
     function elementGenerator(element, amount) {
@@ -297,7 +298,7 @@ function Overview() {
                         </List>
                     </Paper>
                 </Grid>
-                {/* <Grid item xs={12}>
+                <Grid item xs={12}>
                     <Paper sx={item}>
                         <Typography
                             sx={{ mb: -1 }}
@@ -310,17 +311,34 @@ function Overview() {
                         <Typography variant="p" color="#71717A" fontSize={12}>
                             This is a list of latest transactions.
                         </Typography>
-                        <TableContainer sx={{overflowX: 'auto', width: '100%'}}>
-                            <Table sx={{ minWidth: 600, mt: 2, overflowX: 'scroll' }}>
+                        <TableContainer
+                            sx={{
+                                // width: '100vw',
+                            }}
+                        >
+                            <Table
+                                sx={{
+                                    mt: 2,
+                                    tableLayout: 'fixed',
+                                    // width: {lg: '100%', md: '100%', sm: '100%', xs: '140%'},
+                                    // overflowX: "auto",
+                                }}
+                            >
                                 <TableHead>
-                                    <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
-                                        <TableCell sx={{ borderTopLeftRadius: 12 }}>
+                                    <TableRow
+                                        sx={{ backgroundColor: "#F9FAFB" }}
+                                    >
+                                        <TableCell
+                                            sx={{ borderTopLeftRadius: 12 }}
+                                        >
                                             TRANSACTION
                                         </TableCell>
                                         <TableCell align="center">
                                             DATE & TIME
                                         </TableCell>
-                                        <TableCell align="center">AMOUNT</TableCell>
+                                        <TableCell align="center">
+                                            AMOUNT
+                                        </TableCell>
                                         <TableCell
                                             align="center"
                                             sx={{ borderTopRightRadius: 12 }}
@@ -336,9 +354,9 @@ function Overview() {
                                         },
                                     }}
                                 >
-                                    {rows.map((row) => (
+                                    {rows.map((row, i) => (
                                         <TableRow
-                                            key={row.name}
+                                            key={i}
                                             sx={{
                                                 "&:last-child td, &:last-child th":
                                                     { border: 0 },
@@ -389,7 +407,7 @@ function Overview() {
                             </Table>
                         </TableContainer>
                     </Paper>
-                </Grid> */}
+                </Grid>
             </Grid>
         </Box>
     );

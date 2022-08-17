@@ -7,17 +7,30 @@ import icon404 from "../../assets/img/404.png";
 function Page404() {
     return (
         <Box className="404" sx={{ height: "100vh" }}>
-            <Nav pages={pages} isHaveSearch={false}/>
-            <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+            <Nav pages={pages} isHaveSearch={false} />
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                }}
+            >
                 <Toolbar />
-                <img src={icon404} alt="" />
-                <Typography variant="h3" fontWeight={700} sx={{mt: 10}}>
+                <img
+                    src={icon404}
+                    alt=""
+                    style={{ width: "100%", maxWidth: "680px" }}
+                />
+                <Typography variant="h3" fontWeight={700} sx={{ mt: 10 }}>
                     Page not found
                 </Typography>
                 <Typography
                     variant="p"
                     lineHeight={"24px"}
                     color="#6B7280"
+                    textAlign="center"
                     sx={{ pb: "20px", pt: "10px" }}
                 >
                     Oops! Looks like you followed a bad link. If you think this
@@ -35,7 +48,7 @@ function Page404() {
                         borderRadius: 3,
                         "&:hover": {
                             backgroundColor: "#02c583",
-                        }
+                        },
                     }}
                     variant="contained"
                 >

@@ -4,6 +4,7 @@ const initialState = {
     open: false,
 };
 
+console.log(initialState);
 const useMenu = createSlice({
     name: "menu-toggle",
     initialState,

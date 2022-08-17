@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import MenuList from "../menuList";
 import menuToggle from "../menuToggle";
 
 import {
@@ -16,89 +17,14 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
-import {
-    ChartPie,
-    DocumentReport,
-    ShoppingBag,
-    Inbox,
-    LockClosed,
-    ClipboardList,
-    Collection,
-    Support,
-} from "../../lib/icons/Icons";
 import "./aside.scss";
 import logo from "../../assets/img/logo.png";
 
-function Aside({ pages }) {
+function Aside() {
     const drawerWidth = "250px";
     const open = useSelector((state) => state.menuToggle.open);
+    console.log(open);
     const dispatch = useDispatch();
-
-    const MenuList = [
-        {
-            icon: <ChartPie />,
-            title: "Overview",
-            to: "/",
-        },
-        {
-            icon: <DocumentReport />,
-            title: "Pages",
-            items: pages,
-        },
-        {
-            icon: <ShoppingBag />,
-            title: "Sales",
-            items: [
-                {
-                    title: "Product List",
-                    items: [
-                        {
-                            title: "Something1",
-                            to: "/something1",
-                        },
-                        {
-                            title: "Something2",
-                            to: "/something2",
-                        },
-                    ],
-                },
-                {
-                    title: "Billing",
-                    to: "/dashboard/billing",
-                },
-                {
-                    title: "Invoice",
-                    to: "/dashboard/invoice",
-                },
-            ],
-        },
-        {
-            icon: <Inbox />,
-            title: "Messages",
-            to: "/inbox",
-        },
-        {
-            icon: <LockClosed />,
-            title: "Authentication",
-            to: "/auth",
-            divider: true,
-        },
-        {
-            icon: <ClipboardList />,
-            title: "Docs",
-            to: "/dashboard/docs",
-        },
-        {
-            icon: <Collection />,
-            title: "Components",
-            to: "/dashboard/components",
-        },
-        {
-            icon: <Support />,
-            title: "Help",
-            to: "/dashboard/help",
-        },
-    ];
 
     const drawer = (toolbar) => (
         <>
