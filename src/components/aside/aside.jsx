@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import MenuList from "../menuList";
-import menuToggle from "../menuToggle";
+import { menuToggle, menuClose } from "../menuToggle";
 
 import {
     Drawer,
@@ -125,7 +125,7 @@ function Aside() {
                 <ListItem
                     button
                     className="aside__list__item"
-                    onClick={() => dispatch(menuToggle())}
+                    onClick={() => dispatch(menuClose())}
                 >
                     <ListItemBody config={config} />
                 </ListItem>

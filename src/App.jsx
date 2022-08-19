@@ -7,6 +7,8 @@ import Chat from "./components/chat/chat"
 import Page404 from "./pages/404/page404";
 
 import "./App.scss";
+const isMobile = navigator.userAgentData.mobile;
+console.log(navigator.userAgentData);
 
 function App() {
     return (

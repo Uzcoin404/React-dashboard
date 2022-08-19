@@ -8,11 +8,10 @@ import React, {
 } from "react";
 import { NavLink as Link } from "react-router-dom";
 
-import firebase from "firebase/compat/app";
-import "firebase/compat/firestore";
-import "firebase/compat/auth";
-
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import { auth, db } from "../firebase/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { query, collection, orderBy, onSnapshot, QuerySnapshot } from "firebase/firestore";
 
 // Import => Mui
 import { Box, Button, IconButton } from "@mui/material";
@@ -34,24 +33,23 @@ function Chat() {
     let userID = localStorage.getItem("user_id");
     let urlHash = window.location.hash.substring(1);
 
-    const [messages, setMessagesData] = useState("loading");
-    const [adverts, setAdverts] = useState([]);
+    const [messages, setMessages] = useState("loading");
+    const [user, setUser] = useState(useAuthState(auth));
     const [chats, setChats] = useState(null);
     const [chatID, setChatID] = useState(
         urlHash.trim() != "" && !isNaN(urlHash) && urlHash != userID
             ? urlHash
             : null
     );
-    const [chatUser, setChatUser] = useState();
+    const [chatUser, setChatUser] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-    const [chatFound, setChatFound] = useState(true);
     const defaultAvatar =
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI7M4Z0v1HP2Z9tZmfQaZFCuspezuoxter_A&usqp=CAU";
     const { windowWidth } = useWindowDimensions();
     const chatMenu = createRef();
 
     useEffect(() => {
-        setMessagesData("loading");
+        setMessages("loading");
         if (chatID) {
             function getUser() {}
             getUser();
@@ -60,6 +58,7 @@ function Chat() {
     }, [chatID]);
 
     useEffect(() => {
+        getMessages();
         window.addEventListener("hashchange", getHashUrl);
         function getHashUrl() {
             let hash = window.location.hash.substring(1);
@@ -81,20 +80,17 @@ function Chat() {
         }, 3000);
     }, []);
 
-    firebase.initializeApp({
-        apiKey: "AIzaSyD16qWNFnlRg4r3LN9eZSO-EcVQm86TrMo",
-        authDomain: "firechat-e157a.firebaseapp.com",
-        projectId: "firechat-e157a",
-        storageBucket: "firechat-e157a.appspot.com",
-        messagingSenderId: "1028131822299",
-        appId: "1:1028131822299:web:47fe8cfd0029d828068afe",
-        measurementId: "G-9E22DH34DF",
-    });
-
-    const auth = firebase.auth();
-    const firestore = firebase.firestore();
-
-    function getMessages() {}
+    function getMessages() {
+        const request = query(collection(db, 'messages'), orderBy('date'));
+        const unsubscribe = onSnapshot(request, (querySnapshot) => {
+            let messages = [];
+            querySnapshot.forEach((doc) => {
+                messages.push({...doc.data(), id: doc.id});
+            })
+            setMessages(messages);
+        })
+        return () => unsubscribe();
+    }
 
     function getChats(isNotification = false) {}
 
@@ -108,23 +104,13 @@ function Chat() {
     }
 
     function signIn() {
-        const provider = new firebase.auth.GoogleAuthProvider();
+        const provider = new GoogleAuthProvider();
 
         auth.useDeviceLanguage();
-        auth.signInWithPopup(provider);
+        signInWithPopup(auth, provider);
     }
 
-    function SignOut() {
-        return (
-            auth.currentUser && (
-                <Button className="sign__out__btn" onClick={() => auth.signOut()}>
-                    Sign Out
-                </Button>
-            )
-        );
-    }
-
-    if (auth.currentUser) {
+    if (user) {
         return (
             <Box className="chat">
                 <ChatUsers
@@ -137,7 +123,7 @@ function Chat() {
                 />
 
                 <section className="messagesPanel">
-                    {chatUser && chatFound ? (
+                    {chatUser ? (
                         <Box className="messagesPanel__header">
                             {windowWidth > 768 ? (
                                 ""
@@ -199,7 +185,7 @@ function Chat() {
                         defaultAvatar={defaultAvatar}
                     />
 
-                    {chatUser && chatFound ? (
+                    {chatUser ? (
                         <ChatSend
                             chatUser={chatUser}
                             messages={messages}
@@ -211,9 +197,7 @@ function Chat() {
                     )}
                 </section>
 
-                <section className="infoPanel">
-                    {/* <SignOut /> */}
-                </section>
+                <section className="infoPanel"></section>
             </Box>
         );
     } else {

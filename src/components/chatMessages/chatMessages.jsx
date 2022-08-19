@@ -20,7 +20,7 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
             throttleDelay: 90,
             mirror: true,
             once: false,
-            anchorPlacement: 'top-bottom',
+            anchorPlacement: "top-bottom",
         });
     }, []);
     const messagesBlog = document.querySelector(
@@ -39,7 +39,8 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
         messagesBlog.scrollTop = messagesBlog.scrollHeight;
     });
 
-    if (!chatID) {
+    console.log(messages);
+    if (false) { // chatID
         return (
             <div className="welcomeAfemeChat">
                 <img
@@ -63,7 +64,7 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
                     <Spinner />
                 </div>
             );
-        } else if (messages && chatUser) {
+        } else if (messages) {
             let sendingMessages = document.querySelectorAll(".message.move");
             if (sendingMessages) {
                 for (let i = 0; i < sendingMessages.length; i++) {
@@ -77,8 +78,8 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
                         <ReactScrollableFeed>
                             {messages.map((message) => {
                                 i++;
-                                let messageText = message.message.trim();
-                                let date = TimeConverter(message.created);
+                                let messageText = message.text;
+                                let date = TimeConverter(message.date);
                                 let animate =
                                     messages.length > 10
                                         ? ""
@@ -86,68 +87,93 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
                                         ? ""
                                         : "fade-up";
 
-                                if (message.to == chatUser.id) {
-                                    let className = `message${
-                                        message.to == chatUser.id &&
-                                        messages[i]?.to == chatUser.id
-                                            ? " messageGroup"
-                                            : ""
-                                    } outgoing`;
-                                    return (
-                                        <div
-                                            className={className}
-                                            key={v4()}
-                                            data-aos={animate}
-                                        >
-                                            <div className="message__content">
-                                                <p className="message__text">
-                                                    {messageText}
-                                                </p>
-                                                <p className="message__date">
-                                                    {date}
-                                                </p>
-                                            </div>
+                                // if (message.to == chatUser.id) {
+                                //     let className = `message${
+                                //         message.to == chatUser.id &&
+                                //         messages[i]?.to == chatUser.id
+                                //             ? " messageGroup"
+                                //             : ""
+                                //     } outgoing`;
+                                //     return (
+                                //         <div
+                                //             className={className}
+                                //             key={v4()}
+                                //             data-aos={animate}
+                                //         >
+                                //             <div className="message__content">
+                                //                 <p className="message__text">
+                                //                     {messageText}
+                                //                 </p>
+                                //                 <p className="message__date">
+                                //                     {date}
+                                //                 </p>
+                                //             </div>
+                                //         </div>
+                                //     );
+                                // } else {
+                                //     let className = `message${
+                                //         message.to != chatUser.id &&
+                                //         messages[i]?.to != chatUser.id &&
+                                //         messages[i]?.to
+                                //             ? " messageGroup"
+                                //             : ""
+                                //     } incoming`;
+                                //     return (
+                                //         <div
+                                //             className={className}
+                                //             key={v4()}
+                                //             data-aos={animate}
+                                //             to={message.to}
+                                //         >
+                                //             <img
+                                //                 src={
+                                //                     chatUser.image
+                                //                         ? chatUser.image
+                                //                         : defaultAvatar
+                                //                 }
+                                //                 alt=""
+                                //                 className="message__sender"
+                                //                 onError={(e) =>
+                                //                     (e.target.src =
+                                //                         defaultAvatar)
+                                //                 }
+                                //             />
+                                //             <div className="message__content">
+                                //                 <p className="message__text">
+                                //                     {messageText}
+                                //                 </p>
+                                //                 <p className="message__date">
+                                //                     {date}
+                                //                 </p>
+                                //             </div>
+                                //         </div>
+                                //     );
+                                // }
+                                return (
+                                    <div
+                                        className="message"
+                                        key={v4()}
+                                        data-aos={animate}
+                                        to={message.to}
+                                    >
+                                        <img
+                                            src=""
+                                            alt=""
+                                            className="message__sender"
+                                            onError={(e) =>
+                                                (e.target.src = defaultAvatar)
+                                            }
+                                        />
+                                        <div className="message__content">
+                                            <p className="message__text">
+                                                {messageText}
+                                            </p>
+                                            <p className="message__date">
+                                                {date}
+                                            </p>
                                         </div>
-                                    );
-                                } else {
-                                    let className = `message${
-                                        message.to != chatUser.id &&
-                                        messages[i]?.to != chatUser.id &&
-                                        messages[i]?.to
-                                            ? " messageGroup"
-                                            : ""
-                                    } incoming`;
-                                    return (
-                                        <div
-                                            className={className}
-                                            key={v4()}
-                                            data-aos={animate}
-                                            to={message.to}
-                                        >
-                                            <img
-                                                src={
-                                                    chatUser.image
-                                                        ? chatUser.image
-                                                        : defaultAvatar
-                                                }
-                                                alt=""
-                                                className="message__sender"
-                                                onError={(e) =>
-                                                    (e.target.src =
-                                                        defaultAvatar)
-                                                }
-                                            />
-                                            <div className="message__content">
-                                                <p className="message__text">
-                                                    {messageText}
-                                                </p>
-                                                <p className="message__date">
-                                                    {date}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    );
-                                }
+                                    </div>
+                                );
                             })}
                         </ReactScrollableFeed>
                     </div>

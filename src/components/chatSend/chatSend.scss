@@ -79,32 +79,31 @@
             }
         }
     }
-    .imagePreview{
-        &__content{
-            max-height: 600px;
-            padding: 20px;
-        }
-        &__group{
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-        }
-        &__image{
-            width: 100%;
-            height: auto;
-            max-width: 400px;
-            max-height: 220px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-        &__buttons{
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        &__btn{
-            border-radius: 10px;
-        }
+}
+.imagePreview{
+    &__content{
+        max-height: 600px;
+    }
+    &__group{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+    }
+    &__image{
+        width: 100%;
+        height: auto;
+        max-width: 400px;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    &__buttons{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    &__btn{
+        border-radius: 10px;
     }
 }

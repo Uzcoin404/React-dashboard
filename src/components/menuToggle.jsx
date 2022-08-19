@@ -4,7 +4,6 @@ const initialState = {
     open: false,
 };
 
-console.log(initialState);
 const useMenu = createSlice({
     name: "menu-toggle",
     initialState,
@@ -12,8 +11,11 @@ const useMenu = createSlice({
         menuToggle: (state) => {
             state.open = !state.open;
         },
+        menuClose: (state) => {
+            state.open = false;
+        }
     },
 });
-export const { menuToggle } = useMenu.actions
+export const { menuToggle, menuClose } = useMenu.actions
 
 export default useMenu.reducer;

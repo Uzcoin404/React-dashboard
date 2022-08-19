@@ -1,6 +1,9 @@
 import React, { Fragment, useContext, createRef } from "react";
-import { NavLink as Link, useNavigate } from "react-router-dom";
+import { NavLink as Link } from "react-router-dom";
 import { v4 } from "uuid";
+
+import { auth } from "../firebase/firebase"
+import { Button } from "@mui/material";
 
 import Spinner from "../spinner/spinner";
 import TimeConverter from "../../utils/timeConverter";
@@ -9,13 +12,15 @@ import ArrowDown from "../../lib/icons/arrowDown";
 import LogoImg from "../../assets/img/logo.png";
 import "./chatUsers.scss";
 
-function ChatUsers({ chats, chatID, isLoading, defaultAvatar, chatMenu, isOpen }) {
+function ChatUsers({
+    chats,
+    chatID,
+    isLoading,
+    defaultAvatar,
+    chatMenu,
+    isOpen,
+}) {
     const userIndicator = createRef();
-    const history = useNavigate();
-
-    const Back = () => {
-        history(-1);
-    }
 
     function showChats(amount) {
         if (isLoading) {
@@ -37,7 +42,13 @@ function ChatUsers({ chats, chatID, isLoading, defaultAvatar, chatMenu, isOpen }
                                 chatMenu.current.classList.remove("active");
                             }}
                         >
-                            <div className={chatID != chat.user.id ? "chatProfile" : "chatProfile active"}>
+                            <div
+                                className={
+                                    chatID != chat.user.id
+                                        ? "chatProfile"
+                                        : "chatProfile active"
+                                }
+                            >
                                 <img
                                     src={
                                         chat.user.image
@@ -62,8 +73,9 @@ function ChatUsers({ chats, chatID, isLoading, defaultAvatar, chatMenu, isOpen }
                                     </div>
                                     <span
                                         ref={userIndicator}
-                                        className={`chatProfile__read${chat.chat.reading ? "" : " active"
-                                            }`}
+                                        className={`chatProfile__read${
+                                            chat.chat.reading ? "" : " active"
+                                        }`}
                                     >
                                         {lastMsgDate}
                                     </span>
@@ -90,13 +102,14 @@ function ChatUsers({ chats, chatID, isLoading, defaultAvatar, chatMenu, isOpen }
     }
 
     return (
-        <section className={isOpen ? "chatsPanel active" : "chatsPanel"} ref={chatMenu}>
+        <section
+            className={isOpen ? "chatsPanel active" : "chatsPanel"}
+            ref={chatMenu}
+        >
             <div className="chatsPanel__header">
                 <Link to="/" className="chatsPanel__logo">
                     <img src={LogoImg} alt="" />
-                    <h4 className="chatsPanel__header__title">
-                        Messages
-                    </h4>
+                    <h4 className="chatsPanel__header__title">Messages</h4>
                 </Link>
                 <ArrowDown className="arrowDown" />
                 {chats?.hasOwnProperty("length") ? (
@@ -104,7 +117,13 @@ function ChatUsers({ chats, chatID, isLoading, defaultAvatar, chatMenu, isOpen }
                 ) : (
                     ""
                 )}
-                <button className="back" onClick={Back}>Orqaga</button>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => auth.signOut()}
+                >
+                    Log out
+                </Button>
             </div>
             <div className="chatsPanel__main">
                 <div className="chatsPanel__chats">{showChats(7)}</div>

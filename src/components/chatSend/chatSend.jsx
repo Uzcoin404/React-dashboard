@@ -1,6 +1,12 @@
 import React, { createRef, useState } from "react";
 
-import { IconButton, Button } from "@mui/material";
+import {
+    IconButton,
+    Button,
+    Modal,
+    Paper,
+    Box,
+} from "@mui/material";
 import TimeConverter from "../../utils/timeConverter";
 import PaperClip from "../../assets/img/icon/paperclip.svg";
 import PaperPlane from "../../assets/img/icon/paper-plane.svg";
@@ -9,8 +15,8 @@ import "./chatSend.scss";
 let url = process.env.REACT_APP_URL;
 
 function ChatSend({ chatUser, messages, getMessages, getChats }) {
-
     const [previewImages, setPreviewImages] = useState();
+    const [modalOpen, setModalOpen] = useState(false);
     let msgValue = createRef();
     let previewModal = createRef();
     let fileInput = createRef();
@@ -24,7 +30,7 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
         let formData = new FormData();
         let message = msgValue.current.value.trim();
 
-        formData.append("to", chatUser.id); 
+        formData.append("to", chatUser.id);
         formData.append("message", message);
 
         messageChange("");
@@ -43,33 +49,43 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
         })
             .then((response) => response.text())
             .then((response) => {
-                let sendingMessage = document.querySelector('.message.move .message__content.sending');
+                let sendingMessage = document.querySelector(
+                    ".message.move .message__content.sending"
+                );
                 if (!messages) {
                     getMessages();
                     getChats();
                 }
                 if (JSON.parse(response)) {
-                    sendingMessage?.classList.remove('sending');
+                    sendingMessage?.classList.remove("sending");
                 } else {
-                    sendingMessage?.classList.add('error');
+                    sendingMessage?.classList.add("error");
                 }
             })
-            .catch(() => document.querySelector('.message.move .message__content.sending')?.classList.add('error'));
+            .catch(() =>
+                document
+                    .querySelector(".message.move .message__content.sending")
+                    ?.classList.add("error")
+            );
     }
 
     function createMessage(message) {
-        const messages = document.querySelector('.styles_scrollable-div__prSCv');
-        const lastMessage = Array.from(document.querySelectorAll('.message')).pop();
+        const messages = document.querySelector(
+            ".styles_scrollable-div__prSCv"
+        );
+        const lastMessage = Array.from(
+            document.querySelectorAll(".message")
+        ).pop();
 
-        let newMessage = document.createElement('div');
-        let newMessageContent = document.createElement('div');
-        let newMessageText = document.createElement('p');
-        let newMessageTime = document.createElement('p');
+        let newMessage = document.createElement("div");
+        let newMessageContent = document.createElement("div");
+        let newMessageText = document.createElement("p");
+        let newMessageTime = document.createElement("p");
 
-        newMessage.className = 'message outgoing move';
-        newMessageContent.className = 'message__content sending';
-        newMessageText.className = 'message__text';
-        newMessageTime.className = 'message__date';
+        newMessage.className = "message outgoing move";
+        newMessageContent.className = "message__content sending";
+        newMessageText.className = "message__text";
+        newMessageTime.className = "message__date";
 
         newMessageText.innerHTML = message;
         newMessageTime.innerHTML = TimeConverter(Math.floor(Date.now() / 1000));
@@ -79,14 +95,18 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
         newMessage.appendChild(newMessageContent);
         messages.appendChild(newMessage);
 
-        if (lastMessage.classList.contains('outgoing')) {
-            lastMessage.classList.add('messageGroup');
+        if (lastMessage.classList.contains("outgoing")) {
+            lastMessage.classList.add("messageGroup");
         }
 
         if (messages.childElementCount > 0) {
-            const chatProfileList = document.querySelector('.chatsPanel__chats');
-            const chatProfile = document.querySelector(".chatProfile.active").parentNode;
-            chatProfile.querySelector('.chatProfile__text').innerHTML = message.slice(0, 20);
+            const chatProfileList =
+                document.querySelector(".chatsPanel__chats");
+            const chatProfile = document.querySelector(
+                ".chatProfile.active"
+            ).parentNode;
+            chatProfile.querySelector(".chatProfile__text").innerHTML =
+                message.slice(0, 20);
             chatProfileList.prepend(chatProfile);
         }
         messages.scrollTop = messages.scrollHeight;
@@ -106,30 +126,10 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
     }
 
     function sendFile() {
-
         let formData = new FormData();
-        formData.append('key', 'Service For C Group')
+        formData.append("key", "Service For C Group");
         formData.append("file", fileInput.current.files[0]);
-
-        // fetch(`${url}service`, {
-        //     method: 'POST',
-        //     body: formData,
-        //     // redirect: 'follow'
-        // })
-        //     .then((response) => response.text())
-        //     .then(function (response) {
-        //         let res = JSON.parse(response);
-        //         console.log(res);
-        //     })
-        //     .catch((error) => console.log("error", error));
-    }
-
-    function openModal() {
-        previewModal.current.classList.add("modal--open");
-    }
-    function closeModal() {
-        previewModal.current.classList.remove("modal--open");
-        fileInput.current.value = "";
+        setModalOpen(false);
     }
 
     function previewImage() {
@@ -140,8 +140,61 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
                 objectUrl.push(URL.createObjectURL(fileInput.current.files[i]));
             }
             setPreviewImages(objectUrl);
-            openModal();
+            setModalOpen(true);
         }
+    }
+
+    function PreviewModal() {
+        const handleClose = () => setModalOpen(false);
+        return (
+            <Modal
+                open={modalOpen}
+                onClose={handleClose}
+            >
+                <Paper
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 400,
+                        p: 3,
+                        borderRadius: 5
+                    }}
+                    className="imagePreview"
+                >
+                    <div className="imagePreview__content">
+                        <div className="imagePreview__group">
+                            {previewImages?.map((image) => (
+                                <img
+                                    src={image}
+                                    alt=""
+                                    className="imagePreview__image"
+                                />
+                            ))}
+                        </div>
+                        <div className="imagePreview__buttons">
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                className="imagePreview__btn"
+                                onClick={() => setModalOpen(false)}
+                            >
+                                Bekor qilish
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                className="imagePreview__btn"
+                                onClick={() => sendFile()}
+                            >
+                                Yuborish
+                            </Button>
+                        </div>
+                    </div>
+                </Paper>
+            </Modal>
+        );
     }
 
     return (
@@ -150,37 +203,7 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
             className="inputMessage sendMsgForm"
             onSubmit={(e) => sendMessage(e)}
         >
-            <div className="modal imagePreview" ref={previewModal}>
-                <div className="imagePreview__content">
-                    <div className="imagePreview__group">
-                        {previewImages?.map((image) => (
-                            <img
-                                src={image}
-                                alt=""
-                                className="imagePreview__image"
-                            />
-                        ))}
-                    </div>
-                    <div className="imagePreview__buttons">
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            className="imagePreview__btn"
-                            onClick={() => closeModal()}
-                        >
-                            Bekor qilish
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className="imagePreview__btn"
-                            onClick={() => sendFile()}
-                        >
-                            Yuborish
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            <PreviewModal />
             <IconButton className="attachFile" color="primary">
                 <img src={PaperClip} alt="" />
                 <input
