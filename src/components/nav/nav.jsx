@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
 import { useDispatch } from 'react-redux'
-import { menuToggle } from "../menuToggle";
+import { menuToggle } from "../../store/menuToggle";
 import pages from "../../layout/pages";
 
 import {

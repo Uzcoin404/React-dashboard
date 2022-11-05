@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import MenuList from "../menuList";
-import { menuToggle, menuClose } from "../menuToggle";
+import { menuToggle, menuClose } from "../../store/menuToggle";
 
 import {
     Drawer,

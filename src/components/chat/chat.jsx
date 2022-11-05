@@ -6,15 +6,22 @@ import React, {
     createRef,
     useRef,
 } from "react";
-import { NavLink as Link } from "react-router-dom";
+import { NavLink as Link, Route } from "react-router-dom";
 
 import { auth, db } from "../firebase/firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { query, collection, orderBy, onSnapshot, QuerySnapshot } from "firebase/firestore";
+import {
+    query,
+    collection,
+    orderBy,
+    onSnapshot,
+    QuerySnapshot,
+} from "firebase/firestore";
 
 // Import => Mui
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Avatar, Typography } from "@mui/material";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useSelector } from "react-redux";
+import { UserContext } from "../../context/user";
 
 // Import => Components
 import ChatUsers from "../chatUsers/chatUsers";
@@ -34,7 +41,7 @@ function Chat() {
     let urlHash = window.location.hash.substring(1);
 
     const [messages, setMessages] = useState("loading");
-    const [user, setUser] = useState(useAuthState(auth));
+    const { user } = useContext(UserContext);
     const [chats, setChats] = useState(null);
     const [chatID, setChatID] = useState(
         urlHash.trim() != "" && !isNaN(urlHash) && urlHash != userID
@@ -42,11 +49,7 @@ function Chat() {
             : null
     );
     const [chatUser, setChatUser] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
-    const defaultAvatar =
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI7M4Z0v1HP2Z9tZmfQaZFCuspezuoxter_A&usqp=CAU";
     const { windowWidth } = useWindowDimensions();
-    const chatMenu = createRef();
 
     useEffect(() => {
         setMessages("loading");
@@ -59,19 +62,19 @@ function Chat() {
 
     useEffect(() => {
         getMessages();
-        window.addEventListener("hashchange", getHashUrl);
-        function getHashUrl() {
-            let hash = window.location.hash.substring(1);
-            if (hash.trim() != "" && !isNaN(hash) && hash != userID) {
-                setChatID(hash);
-            } else {
-                setChatID(null);
-                window.addEventListener("hashchange", getHashUrl, {
-                    once: true,
-                });
-                window.location.hash = "";
-            }
-        }
+        // window.addEventListener("hashchange", getHashUrl);
+        // function getHashUrl() {
+        //     let hash = window.location.hash.substring(1);
+        //     if (hash.trim() != "" && !isNaN(hash) && hash != userID) {
+        //         setChatID(hash);
+        //     } else {
+        //         setChatID(null);
+        //         window.addEventListener("hashchange", getHashUrl, {
+        //             once: true,
+        //         });
+        //         window.location.hash = "";
+        //     }
+        // }
         setTimeout(() => {
             Notification.requestPermission().then((result) => {
                 console.log(result);
@@ -81,14 +84,14 @@ function Chat() {
     }, []);
 
     function getMessages() {
-        const request = query(collection(db, 'messages'), orderBy('date'));
+        const request = query(collection(db, "messages"), orderBy("date"));
         const unsubscribe = onSnapshot(request, (querySnapshot) => {
             let messages = [];
             querySnapshot.forEach((doc) => {
-                messages.push({...doc.data(), id: doc.id});
-            })
+                messages.push({ ...doc.data(), id: doc.id });
+            });
             setMessages(messages);
-        })
+        });
         return () => unsubscribe();
     }
 
@@ -103,113 +106,98 @@ function Chat() {
         return 0;
     }
 
-    function signIn() {
-        const provider = new GoogleAuthProvider();
+    return (
+        <Box className="chat">
+            <ChatUsers chats={chats} chatID={chatID} />
 
-        auth.useDeviceLanguage();
-        signInWithPopup(auth, provider);
-    }
+            <section className="messagesPanel">
+                {chatUser ? (
+                    <Box className="messagesPanel__header">
+                        {windowWidth > 768 ? (
+                            ""
+                        ) : (
+                            <IconButton
+                                className="chatMenuBtn"
+                                variant="text"
+                                color="primary"
+                                href="#"
+                            >
+                                <ArrowLeft />
+                            </IconButton>
+                        )}
+                        <Box className="chatProfile">
+                            <Avatar
+                                src={chatUser.image}
+                                alt=""
+                                className="chatProfile__img"
+                            ></Avatar>
+                            <Box className="chatProfile__content">
+                                <h5 className="chatProfile__name">
+                                    {chatUser.name} {chatUser.lastname}
+                                </h5>
+                                <span className="chatProfile__text">
+                                    Online
+                                </span>
+                            </Box>
+                        </Box>
+                        <div className="header__more">
+                            <IconButton className="header__more__btn">
+                                <img src={Dots} alt="" />
+                            </IconButton>
+                        </div>
+                    </Box>
+                ) : (
+                    ""
+                )}
 
-    if (user) {
-        return (
-            <Box className="chat">
-                <ChatUsers
-                    chats={chats}
+                <ChatMessages
+                    messages={messages}
                     chatID={chatID}
-                    isLoading={isLoading}
-                    defaultAvatar={defaultAvatar}
-                    chatMenu={chatMenu}
-                    isOpen={windowWidth < 768 && !chatID ? true : false}
                 />
 
-                <section className="messagesPanel">
-                    {chatUser ? (
-                        <Box className="messagesPanel__header">
-                            {windowWidth > 768 ? (
-                                ""
-                            ) : (
-                                <IconButton
-                                    className="chatMenuBtn"
-                                    variant="text"
-                                    color="primary"
-                                    onClick={() =>
-                                        chatMenu.current.classList.add("active")
-                                    }
-                                >
-                                    <Link to={"/chat#"}>
-                                        <ArrowLeft />
-                                    </Link>
-                                </IconButton>
-                            )}
-                            <Box className="chatProfile">
-                                <Link to={"/reltorcob/" + chatUser.id}>
-                                    <img
-                                        src={
-                                            chatUser.image
-                                                ? chatUser.image
-                                                : defaultAvatar
-                                        }
-                                        alt=""
-                                        className="chatProfile__img"
-                                        onError={(e) =>
-                                            (e.target.src = defaultAvatar)
-                                        }
-                                    />
-                                </Link>
-                                <Box className="chatProfile__content">
-                                    <Link
-                                        to={"/reltorcob/" + chatUser.id}
-                                        className="chatProfile__name"
-                                    >
-                                        {chatUser.name} {chatUser.lastname}
-                                    </Link>
-                                    <span className="chatProfile__text">
-                                        {chatUser?.user_type}
-                                    </span>
-                                </Box>
-                            </Box>
-                            <div className="header__more">
-                                <IconButton className="header__more__btn">
-                                    <img src={Dots} alt="" />
-                                </IconButton>
-                            </div>
-                        </Box>
-                    ) : (
-                        ""
-                    )}
-
-                    <ChatMessages
+                {chatUser ? (
+                    <ChatSend
                         messages={messages}
-                        chatUser={chatUser}
-                        chatID={chatID}
-                        defaultAvatar={defaultAvatar}
+                        getMessages={getMessages}
+                        getChats={getChats}
                     />
+                ) : (
+                    ""
+                )}
+            </section>
 
-                    {chatUser ? (
-                        <ChatSend
-                            chatUser={chatUser}
-                            messages={messages}
-                            getMessages={getMessages}
-                            getChats={getChats}
-                        />
-                    ) : (
-                        ""
-                    )}
-                </section>
-
-                <section className="infoPanel"></section>
+            <Box component="section" className="infoPanel" sx={{ mt: 10 }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Avatar
+                        src={user.photoURL}
+                        alt=""
+                        sx={{ width: 100, height: 100 }}
+                    />
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            mt: 2,
+                            overflowWrap: "break-word",
+                            width: "100%",
+                        }}
+                        color="#0f315e"
+                        fontWeight={600}
+                        textAlign="center"
+                    >
+                        {user.displayName}
+                    </Typography>
+                    <Typography variant="p" color="#333" fontSize={15}>
+                        {user.email}
+                    </Typography>
+                </Box>
             </Box>
-        );
-    } else {
-        return (
-            <Box
-                sx={{ display: "grid", placeItems: "center", height: "100vh" }}
-            >
-                <Button variant="outlined" size="large" onClick={signIn}>
-                    Sign in with Google
-                </Button>
-            </Box>
-        );
-    }
+        </Box>
+    );
 }
 export default Chat;

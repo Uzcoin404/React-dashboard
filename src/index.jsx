@@ -8,16 +8,21 @@ import {
     responsiveFontSizes,
     ThemeProvider,
 } from "@mui/material/styles";
+
+import { Provider as UserProvider } from "./context/user";
+
 let theme = createTheme();
 theme = responsiveFontSizes(theme);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <React.StrictMode>
-        <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <App />
-            </ThemeProvider>
-        </Provider>
+        <UserProvider>
+            <Provider store={store}>
+                <ThemeProvider theme={theme}>
+                    <App />
+                </ThemeProvider>
+            </Provider>
+        </UserProvider>
     </React.StrictMode>
 );

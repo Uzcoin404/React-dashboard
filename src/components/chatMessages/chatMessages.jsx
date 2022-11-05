@@ -1,6 +1,7 @@
-import React, { useEffect, createRef, useRef } from "react";
+import React, { useEffect, useContext } from "react";
 
-import { v4 } from "uuid";
+import { UserContext } from "../../context/user";
+import { Avatar } from "@mui/material";
 import ReactScrollableFeed from "react-scrollable-feed";
 import AOS from "aos";
 import TimeConverter from "../../utils/timeConverter";
@@ -10,8 +11,8 @@ import "./chatMessages.scss";
 import noMessageIcon from "../../assets/img/noMessages.svg";
 import welcomeToChat from "../../assets/img/welcomeToChat.svg";
 
-function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
-    let i = 0;
+function ChatMessages({ messages, chatID }) {
+    const { user } = useContext(UserContext);
     useEffect(() => {
         AOS.init({
             offset: 0,
@@ -39,8 +40,8 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
         messagesBlog.scrollTop = messagesBlog.scrollHeight;
     });
 
-    console.log(messages);
-    if (false) { // chatID
+    if (false) {
+        // chatID
         return (
             <div className="welcomeAfemeChat">
                 <img
@@ -76,14 +77,13 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
                 <div className="messages">
                     <div className="bubbles">
                         <ReactScrollableFeed>
-                            {messages.map((message) => {
-                                i++;
+                            {messages.map((message, i) => {
                                 let messageText = message.text;
                                 let date = TimeConverter(message.date);
                                 let animate =
                                     messages.length > 10
                                         ? ""
-                                        : messages.length - 10 > i
+                                        : messages.length - 10 > i + 1
                                         ? ""
                                         : "fade-up";
 
@@ -152,18 +152,15 @@ function ChatMessages({ messages, chatUser, chatID, defaultAvatar }) {
                                 return (
                                     <div
                                         className="message"
-                                        key={v4()}
+                                        key={i}
                                         data-aos={animate}
                                         to={message.to}
                                     >
-                                        <img
+                                        <Avatar
                                             src=""
                                             alt=""
                                             className="message__sender"
-                                            onError={(e) =>
-                                                (e.target.src = defaultAvatar)
-                                            }
-                                        />
+                                        ></Avatar>
                                         <div className="message__content">
                                             <p className="message__text">
                                                 {messageText}

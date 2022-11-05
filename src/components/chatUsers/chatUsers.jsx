@@ -4,8 +4,10 @@ import { v4 } from "uuid";
 
 import { auth } from "../firebase/firebase"
 import { Button } from "@mui/material";
+import ContentLoader from "react-content-loader";
+import { UserContext } from "../../context/user";
 
-import Spinner from "../spinner/spinner";
+import useWindowDimensions from "../../utils/windowDimension";
 import TimeConverter from "../../utils/timeConverter";
 import noChatsIcon from "../../assets/img/icon/noChats.svg";
 import ArrowDown from "../../lib/icons/arrowDown";
@@ -15,17 +17,57 @@ import "./chatUsers.scss";
 function ChatUsers({
     chats,
     chatID,
-    isLoading,
     defaultAvatar,
-    chatMenu,
-    isOpen,
 }) {
+    const { user } = useContext(UserContext);
     const userIndicator = createRef();
+    const { windowWidth } = useWindowDimensions();
+    const isOpen = windowWidth < 768 && !chatID ? true : false;
+    const isLoading = user == 'loading' ? true : false;
 
     function showChats(amount) {
         if (isLoading) {
             let i = -75;
-            return <Spinner />;
+            return (
+                <ContentLoader
+                    speed={1.25}
+                    width={"100%"}
+                    height={amount * 75}
+                    interval={0.25}
+                    backgroundColor="#ebebeb"
+                    foregroundColor="#0066ff00"
+                    style={{ padding: "10px 12px 0" }}
+                >
+                    {Array.apply(null, { length: amount }).map(() => {
+                        i += 75;
+                        return (
+                            <Fragment key={v4()}>
+                                <rect
+                                    x="0"
+                                    y={i}
+                                    rx="10"
+                                    width="50"
+                                    height="50"
+                                />
+                                <rect
+                                    x="65"
+                                    y={i + 5}
+                                    rx="5"
+                                    width="75%"
+                                    height="20"
+                                />
+                                <rect
+                                    x="65"
+                                    y={i + 33}
+                                    rx="5"
+                                    width="40%"
+                                    height="10"
+                                />
+                            </Fragment>
+                        );
+                    })}
+                </ContentLoader>
+            );
         } else {
             if (chats) {
                 return chats.map((chat) => {
@@ -39,7 +81,6 @@ function ChatUsers({
                                 userIndicator.current.classList.remove(
                                     "active"
                                 );
-                                chatMenu.current.classList.remove("active");
                             }}
                         >
                             <div
@@ -101,10 +142,13 @@ function ChatUsers({
         }
     }
 
+    function logOut() {
+        auth.signOut();
+    }
+
     return (
         <section
             className={isOpen ? "chatsPanel active" : "chatsPanel"}
-            ref={chatMenu}
         >
             <div className="chatsPanel__header">
                 <Link to="/" className="chatsPanel__logo">
@@ -120,7 +164,7 @@ function ChatUsers({
                 <Button
                     variant="outlined"
                     color="error"
-                    onClick={() => auth.signOut()}
+                    onClick={logOut}
                 >
                     Log out
                 </Button>

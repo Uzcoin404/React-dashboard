@@ -1,5 +1,8 @@
 import React, { createRef, useState } from "react";
 
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db, auth,  } from "../firebase/firebase";
+
 import {
     IconButton,
     Button,
@@ -14,7 +17,7 @@ import "./chatSend.scss";
 
 let url = process.env.REACT_APP_URL;
 
-function ChatSend({ chatUser, messages, getMessages, getChats }) {
+function ChatSend({ messages }) {
     const [previewImages, setPreviewImages] = useState();
     const [modalOpen, setModalOpen] = useState(false);
     let msgValue = createRef();
@@ -25,48 +28,19 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
     let headers = new Headers();
     headers.append("Authorization", `Bearer ${token}`);
 
-    function sendMessage(e) {
+    async function sendMessage(e) {
         e.preventDefault();
-        let formData = new FormData();
         let message = msgValue.current.value.trim();
+        const { uid, displayName } = auth.currentUser;
 
-        formData.append("to", chatUser.id);
-        formData.append("message", message);
+        // messageChange("");
+        createMessage(message);
+        await addDoc(collection(db, 'messages'), {
+            text: message,
+            uid,
+            date: serverTimestamp()
+        });
 
-        messageChange("");
-        console.log(messages);
-        if (messages) {
-            createMessage(message);
-        } else {
-            getMessages();
-            getChats();
-        }
-
-        fetch(`${url}message`, {
-            method: "POST",
-            body: formData,
-            headers: headers,
-        })
-            .then((response) => response.text())
-            .then((response) => {
-                let sendingMessage = document.querySelector(
-                    ".message.move .message__content.sending"
-                );
-                if (!messages) {
-                    getMessages();
-                    getChats();
-                }
-                if (JSON.parse(response)) {
-                    sendingMessage?.classList.remove("sending");
-                } else {
-                    sendingMessage?.classList.add("error");
-                }
-            })
-            .catch(() =>
-                document
-                    .querySelector(".message.move .message__content.sending")
-                    ?.classList.add("error")
-            );
     }
 
     function createMessage(message) {
@@ -99,16 +73,16 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
             lastMessage.classList.add("messageGroup");
         }
 
-        if (messages.childElementCount > 0) {
-            const chatProfileList =
-                document.querySelector(".chatsPanel__chats");
-            const chatProfile = document.querySelector(
-                ".chatProfile.active"
-            ).parentNode;
-            chatProfile.querySelector(".chatProfile__text").innerHTML =
-                message.slice(0, 20);
-            chatProfileList.prepend(chatProfile);
-        }
+        // if (messages.childElementCount > 0) {
+        //     const chatProfileList =
+        //         document.querySelector(".chatsPanel__chats");
+        //     const chatProfile = document.querySelector(
+        //         ".chatProfile.active"
+        //     ).parentNode;
+        //     chatProfile.querySelector(".chatProfile__text").innerHTML =
+        //         message.slice(0, 20);
+        //     chatProfileList.prepend(chatProfile);
+        // }
         messages.scrollTop = messages.scrollHeight;
     }
 
@@ -126,9 +100,6 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
     }
 
     function sendFile() {
-        let formData = new FormData();
-        formData.append("key", "Service For C Group");
-        formData.append("file", fileInput.current.files[0]);
         setModalOpen(false);
     }
 
@@ -165,9 +136,10 @@ function ChatSend({ chatUser, messages, getMessages, getChats }) {
                 >
                     <div className="imagePreview__content">
                         <div className="imagePreview__group">
-                            {previewImages?.map((image) => (
+                            {previewImages?.map((image, i) => (
                                 <img
                                     src={image}
+                                    key={i}
                                     alt=""
                                     className="imagePreview__image"
                                 />

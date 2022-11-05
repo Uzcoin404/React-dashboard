@@ -3,15 +3,32 @@
     padding: 0;
     box-sizing: border-box;
     outline: none;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
 }
-body{
+body {
     min-height: 100vh;
     scroll-behavior: smooth;
 }
-a{
+a {
     text-decoration: none;
 }
-li{
+li {
     list-style: none;
+}
+::-webkit-scrollbar-track
+{
+	background-color: transparent;
+}
+::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: transparent;
+}
+::-webkit-scrollbar-thumb
+{
+	background-color: #00b7ff;
+	border-radius: 5px;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%,
+	                   color-stop(.5, rgba(255, 255, 255, .2)),
+					   color-stop(.5, transparent), to(transparent));
 }
